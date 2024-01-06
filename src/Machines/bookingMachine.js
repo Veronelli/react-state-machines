@@ -1,5 +1,29 @@
 import { createMachine, assign } from "xstate";
 
+const fillCountry = {
+  initial: "loading",
+  states: {
+    loading: {
+      on: {
+        DONE: {
+          target: "success",
+        },
+        ERROR: {
+          target: "failure",
+        },
+      },
+    },
+    success: {},
+    failure: {
+      on: {
+        RETRY: {
+          target: "loading",
+        },
+      },
+    },
+  },
+};
+
 const bookingMachine = createMachine(
   {
     id: "buy plane tickets",
@@ -29,6 +53,7 @@ const bookingMachine = createMachine(
           },
           CANCEL: "initial",
         },
+        ...fillCountry,
       },
       tickets: {
         on: {
@@ -52,9 +77,9 @@ const bookingMachine = createMachine(
   {
     actions: {
       imprimirInicio: (context) => {
-        console.log("Imprimir inicio")
-        context.passengers = []
-        context.selectedContry = ''
+        console.log("Imprimir inicio");
+        context.passengers = [];
+        context.selectedContry = "";
       },
       imprimirEntrada: () => console.log("Imprimir entrada a search"),
       imprimirSalida: () => console.log("Imprimir salida del search"),
