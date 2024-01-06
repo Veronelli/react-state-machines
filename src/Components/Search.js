@@ -5,7 +5,7 @@ export const Search = ({ send }) => {
   const [flight, setFlight] = useState('');
 
   const goToPassengers = () => {
-    send('CONTINUE')
+    send('CONTINUE', {selectedContry: flight})
   }
 
   const handleSelectChange = (event) => {
