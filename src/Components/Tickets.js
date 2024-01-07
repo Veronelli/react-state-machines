@@ -13,7 +13,7 @@ export const Tickets = ({ send, context }) => {
       </p>
       {context.passengers.map((passanger) => (
         <div className="Tickets-ticket">
-          <div className="Tickets-country">Colombia</div>
+          <div className="Tickets-country">{context.selectedContry}</div>
           <div className="Tickets-passengers">
             <div>
               <p>Tripulante: {passanger}</p>

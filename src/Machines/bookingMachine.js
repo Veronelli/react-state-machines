@@ -1,15 +1,25 @@
 import { createMachine, assign } from "xstate";
+import { invoke } from "xstate/lib/actionTypes";
+import { fetchCountries } from "../Utils/api";
 
 const fillCountry = {
   initial: "loading",
   states: {
     loading: {
-      on: {
-        DONE: {
+      invoke: {
+        id: "getCounties",
+        src: () => fetchCountries,
+        onDone: {
           target: "success",
+          actions: assign({
+            countries: (context, event) => event.data,
+          }),
         },
-        ERROR: {
+        onError: {
           target: "failure",
+          actions: assign({
+            error: "Failure Request",
+          }),
         },
       },
     },
@@ -31,6 +41,8 @@ const bookingMachine = createMachine(
     context: {
       selectedContry: "",
       passengers: [],
+      countries: [],
+      error: "",
     },
     states: {
       initial: {
@@ -58,11 +70,15 @@ const bookingMachine = createMachine(
       tickets: {
         on: {
           FINISH: "initial",
+          CANCEL: "initial",
         },
       },
       passengers: {
         on: {
-          DONE: "tickets",
+          DONE: {
+            target: "tickets",
+            cond: "moreThanOnePassanger",
+          },
           CANCEL: "initial",
           ADD: {
             target: "passengers",
@@ -83,6 +99,9 @@ const bookingMachine = createMachine(
       },
       imprimirEntrada: () => console.log("Imprimir entrada a search"),
       imprimirSalida: () => console.log("Imprimir salida del search"),
+    },
+    guards: {
+      moreThanOnePassanger: (context) => context.passengers.length > 0,
     },
   }
 );
